@@ -51,7 +51,14 @@ param(
     $Sids = $curSIDs.line 
     foreach($user in $users){
         $objUser = New-Object System.Security.Principal.NTAccount($user)
-        $strSID = $objUser.Translate([System.Security.Principal.SecurityIdentifier])
+        try{
+            $strSID = $objUser.Translate([System.Security.Principal.SecurityIdentifier])
+        }
+        catch{
+            Write-Verbose $Error[0]
+            Write-Host "No SID found for user $user"
+            $returnValue = $false
+        }
         if(!$Sids.Contains($strSID) -and !$sids.Contains($user)){
             Write-Host "$user or $strSID not found"
             $returnValue = $false
